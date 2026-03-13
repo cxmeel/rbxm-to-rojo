@@ -1,5 +1,5 @@
 --[[
-    lune run src/convert <input> -o <output> [-x | --explicit <true|false>]
+    lune run src/convert <input> [-x | --explicit <true|false>]
 
     Converts a Roblox rbxm file to a Rojo-compatible json structure.
     The output can then be used with Rojo to sync the structure to a
@@ -37,8 +37,7 @@ local function findFlagValue(args: { string }, names: { string }): ((string | bo
 	return nil, args
 end
 
-local OUTPUT_PATH, POPPED_ARGS = findFlagValue(process.args, { "-o", "--output" })
-local INPUT_PATH = POPPED_ARGS[1]
+local INPUT_PATH = process.args[1]
 local USE_EXPLICIT = findFlagValue(process.args, { "-x", "--explicit" })
 
 if USE_EXPLICIT == nil then
@@ -47,21 +46,19 @@ elseif USE_EXPLICIT == "false" or USE_EXPLICIT == "0" then
 	USE_EXPLICIT = false
 end
 
-if not INPUT_PATH or type(OUTPUT_PATH) ~= "string" then
-	error("Usage: lune run src/convert <input> -o <output>")
+if not INPUT_PATH then
+	error("Usage: lune run src/convert <input> [-x | --explicit <true|false>]")
 end
 
 if INPUT_PATH:sub(1, 1) == "." then
 	INPUT_PATH = `{process.cwd}/{INPUT_PATH:match("^[./\\]+(.+)$")}`
 end
 
-if OUTPUT_PATH:sub(1, 1) == "." then
-	OUTPUT_PATH = `{process.cwd}/{OUTPUT_PATH:match("^[./\\]+(.+)$")}`
-end
-
 if not fs.isFile(INPUT_PATH) then
 	error("Input file does not exist: " .. INPUT_PATH)
 end
+
+local OUTPUT_PATH = INPUT_PATH:gsub("%.rbxmx?$", ".model.json")
 
 local rbxmContent = fs.readFile(INPUT_PATH)
 local rbxm = rbx.deserializeModel(rbxmContent)
