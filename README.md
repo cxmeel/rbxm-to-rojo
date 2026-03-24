@@ -9,7 +9,7 @@ Arguments:
     <path>          The path to the .rbxm or .rbxl file to convert.
 
 Options:
-    -o, --output    The path to the output file. Just prints to stdout if not specified.
+    -o, --output    The path to the output file—defaults to replacing file extension with json
     -p, --print     Print the output to the terminal, instead of writing to a file.
     -x, --explicit  Write DataTypes in Rojo explicit format.
     -m, --minified  Minify the output JSON.
