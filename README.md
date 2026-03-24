@@ -1,7 +1,7 @@
 # rbxm-to-rojo
 
 ```sh
-$ lune run convert <path> [-o <output>] [-x] [-m] [-h]
+$ lune run convert <path> [-o <output>] [-x] [-m] [-h] [-p]
 
 Convert a Roblox model or place to a Rojo JSON format.
 
@@ -10,6 +10,7 @@ Arguments:
 
 Options:
     -o, --output    The path to the output file. Just prints to stdout if not specified.
+    -p, --print     Print the output to the terminal, instead of writing to a file.
     -x, --explicit  Write DataTypes in Rojo explicit format.
     -m, --minified  Minify the output JSON.
     -h, --help      Show this help message and exit.
