@@ -181,6 +181,18 @@ local function processPlace(path: string, explicit: boolean)
 	return tree
 end
 
+local function resolveExtension(extension: string)
+	extension = extension:lower()
+
+	for pattern, format in SERDE_FORMAT do
+		if extension:match(pattern) then
+			return format
+		end
+	end
+
+	return "json"
+end
+
 local function writeFile(path: string, content: string)
 	local segments = path:split("/")
 	local currentPath = ""
@@ -203,12 +215,14 @@ local function main()
 
 	parser:argument("path", "Path to the model or place file to convert")
 	parser:option("-o --output", "Path to save the output JSON file")
+	parser:flag("-p --print", "Print the output to the console instead of saving to a file", false)
 	parser:flag("-x --explicit", "Write DataTypes in explicit format", false)
 	parser:flag("-m --minified", "Minify the output JSON", false)
 
 	local args = parser:parse(process.args) :: {
 		path: string,
 		output: string?,
+		print: boolean,
 		explicit: boolean,
 		minified: boolean,
 	}
@@ -238,11 +252,15 @@ local function main()
 
 	local output = serde.encode(serdeFormat, tree, not args.minified)
 
-	if args.output then
-		writeFile(args.output, output)
-	else
+	local outputExt = resolveExtension(serdeFormat)
+	local outputPath = args.output or args.path:gsub("%.[^.]+$", `.{outputExt}`)
+
+	if args.print then
 		print(output)
+		return
 	end
+
+	writeFile(outputPath, output)
 end
 
 main()
